@@ -22,8 +22,8 @@ def test_workflow_task_routing(mocker):
     
     # Verify LLM was called with Task prompt
     assert "enterprise" in mock_llm.call_args[0][0].lower()
-    # Verify Jira comment was added
-    mock_jira.return_value.add_comment.assert_called_with("BT-1", "Quality Score: 85/100")
+    # Verify Jira comment was NOT added
+    mock_jira.return_value.add_comment.assert_not_called()
 
 def test_story_flow_low_score_triggers_parallel(mocker):
     mock_jira = mocker.patch('src.workflow.JiraClient')

@@ -15,6 +15,18 @@ class WorkflowManager:
         self.llm = OllamaClient()
         self.prompt_loader = PromptLoader()
 
+    def send_to_forge(self, issue_key, data):
+        """Sends analysis results back to the AI-Suggest Forge App custom panel"""
+        payload = {
+            "key": issue_key,
+            **data
+        }
+        try:
+            requests.post(Config.FORGE_WEBHOOK_URL, json=payload)
+            logger.info(f"Successfully sent analysis for {issue_key} to Forge")
+        except Exception as e:
+            logger.error(f"Failed to send data to Forge for {issue_key}: {e}")
+
     def run(self, data):
         """Entry point for the workflow logic"""
         # Node: Code4 (Logging)
@@ -46,8 +58,8 @@ class WorkflowManager:
             logger.error(f"LLM did not return JSON for {issue_type}: {result}")
             result = {"quality_score": "N/A", "suggestions": {}}
 
-        comment = f"Quality Score: {result.get('quality_score', 'N/A')}/100"
-        self.jira.add_comment(issue_key, comment)
+        # Consolidate results for AI-Suggest Forge Panel
+        self.send_to_forge(issue_key, {"analysis": result})
         return result
 
     def handle_story_flow(self, issue_key):
@@ -68,11 +80,11 @@ class WorkflowManager:
 
         quality_score = result.get('quality_score', 0)
         
+        # Send initial analysis to Forge regardless of score
+        self.send_to_forge(issue_key, {"analysis": result})
+        
         if quality_score < 59:
             self.execute_parallel_rewrites(issue_key, issue_data)
-        else:
-            self.jira.add_comment(issue_key, f"Story quality score: {quality_score}/100")
-            
         return result
 
     def execute_parallel_rewrites(self, issue_key, issue_data):
@@ -95,11 +107,6 @@ class WorkflowManager:
                 except Exception as exc:
                     logger.error(f'{name} generated an exception: {exc}')
 
-        payload = {
-            "key": issue_key,
-            "suggestions": results
-        }
-        
-        # HTTP Request node
-        requests.post(Config.FORGE_WEBHOOK_URL, json=payload)
+        # Send parallel rewrites to Forge
+        self.send_to_forge(issue_key, {"suggestions": results})
 

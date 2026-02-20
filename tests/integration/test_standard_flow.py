@@ -54,15 +54,13 @@ def test_task_flow_integration(client, auth_header, mocker):
     # Check Flask response
     assert response.status_code == 200
     
-    # Verify Ollama was called with the logic from workflow.py
-    # (Checking if the internal prompt building worked)
+    # Verify LLM was called with Task prompt
     args, kwargs = mock_ollama.call_args
     assert "enterprise" in kwargs['messages'][0]['content'].lower()
     assert "feature x" in kwargs['messages'][1]['content'].lower()
 
-    # Verify Jira comment was attempted with data processed by the LLM
-    # (Checking if the JiraClient and Workflow collaborated)
-    jira_call_args = mock_post.call_args
-    assert "PROJ-101" in jira_call_args.args[0]
-    payload = jira_call_args.kwargs['json']
-    assert "Quality Score: 92/100" in payload['body']['content'][0]['content'][0]['text']
+    # Verify Forge webhook was called with analysis
+    forge_call_args = mock_post.call_args
+    payload = forge_call_args.kwargs['json']
+    assert payload['key'] == "PROJ-101"
+    assert payload['analysis']['quality_score'] == 92

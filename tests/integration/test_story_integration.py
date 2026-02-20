@@ -52,13 +52,10 @@ def test_story_rewrite_integration(client, auth_header, mocker):
 
     assert response.status_code == 200
     
-    # Verify that we hit the final HTTP Request node (Forge Webhook)
-    # This only happens if quality_score < 59
-    any_post_is_forge = any(
-        Config.FORGE_WEBHOOK_URL in str(call) 
-        for call in mock_post.call_args_list
-    )
-    assert any_post_is_forge, "Forge webhook should have been triggered for low score story"
+    # Verify that we hit the Forge Webhook multiple times
+    # 1. Initial Analysis
+    # 2. Parallel Rewrites
+    assert mock_post.call_count == 2
     
     # Check that parallel rewrites happened (4 total ollama calls: 1 initial + 3 rewrites)
     assert mock_ollama.call_count == 4
