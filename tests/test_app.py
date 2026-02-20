@@ -25,6 +25,7 @@ def test_webhook_unauthorized(client):
 def test_webhook_success_routing(client, auth_header, mocker):
     # Mock WorkflowManager to avoid real LLM/Jira calls
     mock_run = mocker.patch('src.workflow.WorkflowManager.run')
+    mock_run.return_value = {"status": "mocked"}
     
     payload = {
         "issueKey": "PROJ-123",

@@ -1,0 +1,19 @@
+issue_types:
+  Task:
+    prompt_file: "task_agent.md"
+  "[System] Incident":
+    prompt_file: "incident_agent.md"
+  "[System] Service request":
+    prompt_file: "service_request_agent.md"
+  "[System] Service request with approvals":
+    prompt_file: "service_request_approvals_agent.md"
+  Story:
+    prompt_file: "story_quality_agent.md"
+
+parallel_rewriters:
+  Claude:
+    prompt_file: "rewrite_claude.md"
+  Gemini Flash 2.5:
+    prompt_file: "rewrite_gemini.md"
+  OpenAI:
+    prompt_file: "rewrite_openai.md"

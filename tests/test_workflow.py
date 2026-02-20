@@ -21,7 +21,7 @@ def test_workflow_task_routing(mocker):
     manager.run(data)
     
     # Verify LLM was called with Task prompt
-    assert "banking technology" in mock_llm.call_args[0][0]
+    assert "enterprise" in mock_llm.call_args[0][0].lower()
     # Verify Jira comment was added
     mock_jira.return_value.add_comment.assert_called_with("BT-1", "Quality Score: 85/100")
 

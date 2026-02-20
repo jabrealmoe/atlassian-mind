@@ -4,3 +4,4 @@ n8n-workflow.json
 *.pyc
 venv
 .vscode
+atlassian-mind.json

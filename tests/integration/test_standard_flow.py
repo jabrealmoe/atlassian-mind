@@ -35,12 +35,12 @@ def test_task_flow_integration(client, auth_header, mocker):
 
     # 3. Simulate Incoming Webhook (The trigger)
     webhook_payload = {
-        "issueKey": "FIN-101",
+        "issueKey": "PROJ-101",
         "body": {
             "issueType": {"name": "Task"},
-            "summary": "Implement risk audit log",
-            "description": "Log all overnight PnL access",
-            "issueKey": "FIN-101"
+            "summary": "Implement feature X",
+            "description": "Ensure feature X is scalable",
+            "issueKey": "PROJ-101"
         }
     }
 
@@ -57,12 +57,12 @@ def test_task_flow_integration(client, auth_header, mocker):
     # Verify Ollama was called with the logic from workflow.py
     # (Checking if the internal prompt building worked)
     args, kwargs = mock_ollama.call_args
-    assert "banking technology" in kwargs['messages'][0]['content']
-    assert "risk audit log" in kwargs['messages'][1]['content']
+    assert "enterprise" in kwargs['messages'][0]['content'].lower()
+    assert "feature x" in kwargs['messages'][1]['content'].lower()
 
     # Verify Jira comment was attempted with data processed by the LLM
     # (Checking if the JiraClient and Workflow collaborated)
     jira_call_args = mock_post.call_args
-    assert "FIN-101" in jira_call_args.args[0]
+    assert "PROJ-101" in jira_call_args.args[0]
     payload = jira_call_args.kwargs['json']
     assert "Quality Score: 92/100" in payload['body']['content'][0]['content'][0]['text']

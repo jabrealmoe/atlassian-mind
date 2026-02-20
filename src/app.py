@@ -26,7 +26,7 @@ def create_app():
         return decorated
 
     @app.route('/webhook/3a386c57-e834-4b90-81d9-02ddf5bb027d', methods=['POST'])
-    # @token_required
+    @token_required
     def n8n_webhook():
         try:
             result = workflow.run(request.json)
