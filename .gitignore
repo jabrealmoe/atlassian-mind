@@ -1,0 +1,6 @@
+n8n-workflow.json
+.env
+*__pycache__*
+*.pyc
+venv
+.vscode
