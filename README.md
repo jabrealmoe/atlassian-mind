@@ -52,11 +52,15 @@ Atlassian Mind is an AI-powered facilitation system for Jira, designed to enhanc
    OLLAMA_MODEL=llama3
    ```
 
-### Running the App
+### Running the App Locally
 
 ```bash
 env/bin/python main.py
 ```
+
+### Production Deployment
+
+For enterprise deployment on **Azure** or **GCP**, see the [Deployment Guide](deployment/README.md).
 
 ### Running Tests
 
